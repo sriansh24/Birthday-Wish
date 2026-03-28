@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 
-import personImage from "../../assets/img/ratnakar.png";
+import personImage from "../../assets/img/barsha.jpeg";
 const BIRTHDAY_PERSON_IMAGE = personImage;
-const BIRTHDAY_PERSON_NAME = "RATNAKAR";
+const BIRTHDAY_PERSON_NAME = "I Wish You The Very Great, Joyous, & Peaceful Birthday My Precious Li'l Sis BARSHA";
+import birthdaySong from "../../assets/birthday-song/happy-birthday-1.mp3";
 
 const WISHES = [
   {
@@ -471,7 +472,11 @@ function BirthdayWish() {
     })),
   ).current;
 
+  // ── Play music as soon as the gift button is clicked ──
   const handleGiftClick = () => {
+    if (audioRef.current) {
+      audioRef.current.play().catch(() => {});
+    }
     setStage("revealed");
     setTimeout(() => setStage("cake"), 3000);
   };
@@ -487,12 +492,6 @@ function BirthdayWish() {
     setStage("done");
     if (audioRef.current) audioRef.current.pause();
   };
-
-  useEffect(() => {
-    if (stage === "cake" && audioRef.current) {
-      audioRef.current.play().catch(() => {});
-    }
-  }, [stage]);
 
   return (
     <>
@@ -575,7 +574,7 @@ function BirthdayWish() {
 
       {/* 🎵 Place happy-birthday.mp3 inside public/ folder */}
       <audio ref={audioRef} loop>
-        <source src="/happy-birthday.mp3" type="audio/mpeg" />
+        <source src={birthdaySong} type="audio/mpeg" />
       </audio>
 
       {/* ── FULL SCREEN WRAPPER ── */}
@@ -713,7 +712,7 @@ function BirthdayWish() {
                   textAlign: "center",
                 }}
               >
-                {BIRTHDAY_PERSON_NAME} 🌟
+                {BIRTHDAY_PERSON_NAME} 🥳🌟
               </h2>
             </div>
 
@@ -854,4 +853,5 @@ function BirthdayWish() {
     </>
   );
 }
+
 export default BirthdayWish;
