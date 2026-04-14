@@ -1,857 +1,583 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from 'react'
 
-import personImage from "../../assets/img/barsha.jpeg";
-const BIRTHDAY_PERSON_IMAGE = personImage;
-const BIRTHDAY_PERSON_NAME = "I Wish You The Very Great, Joyous, & Peaceful Birthday My Precious Li'l Sis BARSHA";
-import birthdaySong from "../../assets/birthday-song/happy-birthday-1.mp3";
+/* ─── Utility ─────────────────────────────────────── */
+const rand = (a, b) => Math.random() * (b - a) + a
 
-const WISHES = [
-  {
-    id: 1,
-    title: "Good Fortune",
-    emoji: "🌟",
-    quote:
-      "May this year of yours or the upcoming year be filled with good fortune and bright opportunities.",
-  },
-  {
-    id: 2,
-    title: "Perfect Health and Vitality",
-    emoji: "💚",
-    quote:
-      "I wish may you have a long, active life, free from disease and pain, with the mental strength and physical stamina to enjoy it.",
-  },
-  {
-    id: 3,
-    title: "A Wish for Adventures",
-    emoji: "🧭",
-    quote:
-      "May your year and upcoming year ahead be packed with exciting adventures, fun discoveries, and endless happiness!",
-  },
-];
+/* ─── Inline Styles (CSS-in-JS for complex animations) ─── */
+const globalStyles = `
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Orbitron:wght@400;700&display=swap');
 
-// ── Balloon ────────────────────────────────────────────────
-function Balloon({ color, left, delay, size }) {
-  return (
-    <div
-      className="absolute bottom-0 pointer-events-none select-none"
-      style={{
-        left: `${left}%`,
-        animation: `floatBalloon ${7 + (left % 5)}s ${delay}s ease-in-out infinite alternate`,
-      }}
-    >
-      <svg width={size} height={size * 1.2} viewBox="0 0 60 80">
-        <ellipse cx="30" cy="28" rx="22" ry="26" fill={color} opacity="0.88" />
-        <ellipse cx="22" cy="18" rx="7" ry="5" fill="white" opacity="0.25" />
-        <path
-          d="M30 54 Q28 60 30 66 Q32 60 30 54"
-          stroke={color}
-          strokeWidth="2"
-          fill="none"
-        />
-        <path
-          d="M30 66 Q20 72 15 80 Q25 76 30 66 Q35 76 45 80 Q40 72 30 66"
-          stroke="#ccc"
-          strokeWidth="1.2"
-          fill="none"
-          opacity="0.6"
-        />
-      </svg>
-    </div>
-  );
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body, #root { width: 100%; height: 100%; overflow: hidden; }
 
-// ── Confetti ───────────────────────────────────────────────
-function ConfettiStrip({ color, left, delay, rotate }) {
-  return (
-    <div
-      className="absolute top-0 pointer-events-none"
-      style={{
-        left: `${left}%`,
-        width: 8,
-        height: 22,
-        backgroundColor: color,
-        borderRadius: 3,
-        transform: `rotate(${rotate}deg)`,
-        animation: `fallConfetti ${6 + (left % 4)}s ${delay}s linear infinite`,
-        opacity: 0.8,
-      }}
-    />
-  );
-}
+  :root {
+    --neon-blue: #00d4ff;
+    --neon-blue-dim: rgba(0,212,255,0.3);
+    --neon-blue-glow: rgba(0,212,255,0.6);
+    --gold: #ffd700;
+  }
 
-// ── Ribbon ─────────────────────────────────────────────────
-function Ribbon({ color, left, delay }) {
-  return (
-    <div
-      className="absolute top-0 pointer-events-none"
-      style={{
-        left: `${left}%`,
-        width: 4,
-        height: 60,
-        background: `linear-gradient(180deg, ${color} 0%, transparent 100%)`,
-        borderRadius: 2,
-        animation: `fallRibbon ${8 + (left % 4)}s ${delay}s ease-in-out infinite`,
-        opacity: 0.75,
-      }}
-    />
-  );
-}
+  @keyframes twinkle {
+    0%,100% { opacity: 0.1; }
+    50%      { opacity: 0.85; }
+  }
+  @keyframes fallDown {
+    0%   { transform: translateY(0) rotate(var(--angle,15deg)); opacity: 1; }
+    100% { transform: translateY(var(--fall-dist,300px)) rotate(var(--angle,15deg)); opacity: 0; }
+  }
+  @keyframes framePulse {
+    0%,100% { box-shadow: 0 0 20px var(--neon-blue-glow), 0 0 50px rgba(124,58,237,0.4); }
+    50%      { box-shadow: 0 0 35px var(--neon-blue-glow), 0 0 80px rgba(124,58,237,0.6), 0 0 100px rgba(0,212,255,0.2); }
+  }
+  @keyframes giftGlow {
+    0%,100% { box-shadow: 0 0 12px var(--neon-blue-dim), inset 0 0 10px rgba(0,212,255,0.05); }
+    50%      { box-shadow: 0 0 28px var(--neon-blue-glow), 0 0 50px rgba(0,212,255,0.3), inset 0 0 16px rgba(0,212,255,0.1); }
+  }
+  @keyframes goldGlow {
+    0%,100% { box-shadow: 0 0 12px rgba(255,215,0,0.3); }
+    50%      { box-shadow: 0 0 28px rgba(255,215,0,0.7), 0 0 50px rgba(255,215,0,0.3); }
+  }
+  @keyframes rotate3d {
+    0%   { transform: perspective(400px) rotateY(0deg); }
+    100% { transform: perspective(400px) rotateY(360deg); }
+  }
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes cakeFadeUp {
+    0%   { opacity: 0; transform: translateY(80px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scrapFadeIn {
+    0%   { opacity: 0; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  @keyframes confettiFall {
+    0%   { transform: translateY(0) rotateZ(0); opacity: 1; }
+    100% { transform: translateY(var(--cf-dist,200px)) translateX(var(--cf-x,20px)) rotateZ(var(--cf-rot,720deg)); opacity: 0; }
+  }
+  @keyframes flicker {
+    0%,100% { transform: scaleY(1) scaleX(1); }
+    50%      { transform: scaleY(1.15) scaleX(0.85); }
+  }
 
-// ── Flame ──────────────────────────────────────────────────
-function Flame({ blown }) {
-  return (
-    <div className="flex flex-col items-center" style={{ marginBottom: -2 }}>
-      {!blown ? (
-        <div
-          style={{
-            width: 10,
-            height: 18,
-            borderRadius: "50% 50% 30% 30%",
-            background: "linear-gradient(180deg,#fff176,#ffb300,#ff6d00)",
-            animation: "flicker 0.4s ease-in-out infinite alternate",
-            filter: "blur(0.5px)",
-            boxShadow: "0 0 8px 3px #ffb30088",
-          }}
-        />
-      ) : (
-        <div
-          style={{
-            width: 10,
-            height: 4,
-            borderRadius: 2,
-            background: "#aaa",
-            opacity: 0.5,
-          }}
-        />
-      )}
-    </div>
-  );
-}
+  .star-static {
+    position: absolute; border-radius: 50%; background: white; opacity: 0;
+    animation: twinkle var(--dur,3s) ease-in-out infinite var(--delay,0s);
+  }
+  .fall-star {
+    position: absolute; width: 2px; border-radius: 2px;
+    background: linear-gradient(180deg, #fff 0%, rgba(180,220,255,0.8) 50%, transparent 100%);
+    animation: fallDown var(--fall-dur,1s) ease-in forwards;
+    pointer-events: none;
+  }
+  .nebula { position: absolute; border-radius: 50%; filter: blur(60px); pointer-events: none; }
 
-// ── Cake ───────────────────────────────────────────────────
-function Cake({ blown }) {
-  return (
-    <div className="flex flex-col items-center" style={{ userSelect: "none" }}>
-      <div className="flex gap-3 mb-1">
-        {[0, 1, 2, 3, 4].map((i) => (
-          <div key={i} className="flex flex-col items-center">
-            <Flame blown={blown} />
-            <div
-              style={{
-                width: 10,
-                height: 36,
-                borderRadius: 4,
-                background: i % 2 === 0 ? "#f06292" : "#ba68c8",
-                boxShadow: "inset -2px 0 4px rgba(0,0,0,0.2)",
-              }}
-            />
-          </div>
-        ))}
-      </div>
-      {/* Top tier */}
-      <div
-        style={{
-          width: "min(160px, 42vw)",
-          height: 48,
-          borderRadius: "12px 12px 0 0",
-          background: "linear-gradient(135deg,#f8bbd0,#f48fb1)",
-          boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: 16,
-            background:
-              "repeating-linear-gradient(90deg,#fff 0px,#fff 12px,transparent 12px,transparent 24px)",
-            opacity: 0.3,
-          }}
-        />
-        <div className="absolute inset-0 flex items-center justify-center text-white text-xs font-bold opacity-70">
-          ★ ★ ★
-        </div>
-      </div>
-      {/* Middle tier */}
-      <div
-        style={{
-          width: "min(200px, 52vw)",
-          height: 56,
-          background: "linear-gradient(135deg,#ce93d8,#ab47bc)",
-          boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 14,
-            background:
-              "repeating-linear-gradient(90deg,#f8bbd0 0px,#f8bbd0 10px,transparent 10px,transparent 20px)",
-            opacity: 0.5,
-          }}
-        />
-        <div className="absolute inset-0 flex items-center justify-center text-white font-bold opacity-60 text-sm">
-          🌸 🌸 🌸
-        </div>
-      </div>
-      {/* Bottom tier */}
-      <div
-        style={{
-          width: "min(250px, 64vw)",
-          height: 64,
-          borderRadius: "0 0 16px 16px",
-          background: "linear-gradient(135deg,#80cbc4,#26a69a)",
-          boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 16,
-            background:
-              "repeating-linear-gradient(90deg,#fff 0px,#fff 8px,transparent 8px,transparent 16px)",
-            opacity: 0.3,
-          }}
-        />
-        <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-sm opacity-70">
-          🎂 Happy Birthday 🎂
-        </div>
-      </div>
-      {/* Plate */}
-      <div
-        style={{
-          width: "min(280px, 72vw)",
-          height: 14,
-          borderRadius: "0 0 50% 50%",
-          background: "linear-gradient(90deg,#b2dfdb,#80cbc4)",
-          boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
-        }}
-      />
-    </div>
-  );
-}
+  .anim-fade-down  { animation: fadeInDown 1.2s ease both; }
+  .anim-fade-up-1  { animation: fadeInUp 1.4s ease 0.3s both; }
+  .anim-fade-up-2  { animation: fadeInUp 1.4s ease 0.6s both; }
+  .anim-fade-up-3  { animation: fadeInUp 1.5s ease 0.8s both; }
+  .anim-fade-right { animation: fadeInRight 1.4s ease 0.4s both; }
 
-// ── Party Popper ───────────────────────────────────────────
-function PartyPopper({ side, active }) {
-  const particles = Array.from({ length: 18 }).map((_, i) => ({
-    angle: side === "left" ? 20 + i * 9 : 160 - i * 9,
-    color: ["#f06292", "#ba68c8", "#4fc3f7", "#ffb300", "#66bb6a", "#ff7043"][
-      i % 6
-    ],
-    dist: 60 + i * 4,
-    size: 6 + (i % 4),
-    delay: i * 0.03,
-  }));
+  .neon-frame {
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--neon-blue), #7c3aed, var(--neon-blue));
+    padding: 3px;
+    animation: framePulse 2.5s ease-in-out infinite;
+  }
+  .neon-frame-inner {
+    width: 100%; height: 100%; border-radius: 13px;
+    background: linear-gradient(135deg,#1a0a3d,#0a1a3d);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .neon-frame-inner img {
+    width: 100%; height: 100%; object-fit: cover; border-radius: 13px;
+  }
+
+  .gift-btn {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--neon-blue);
+    border: 2px solid var(--neon-blue);
+    background: rgba(0,212,255,0.06);
+    border-radius: 50px; cursor: pointer;
+    animation: giftGlow 2s ease-in-out infinite, rotate3d 6s linear infinite, fadeInUp 1.5s ease 0.8s both;
+    transition: background 0.2s;
+  }
+  .gift-btn:hover { background: rgba(0,212,255,0.15); }
+
+  .blow-btn {
+    font-family: 'Orbitron', sans-serif;
+    color: #ffd700; border: 2px solid #ffd700;
+    background: rgba(255,215,0,0.06);
+    border-radius: 50px; cursor: pointer;
+    animation: goldGlow 2s ease-in-out infinite, rotate3d 6s linear infinite;
+    transition: background 0.2s;
+  }
+  .blow-btn:hover { background: rgba(255,215,0,0.15); }
+
+  .cake-enter { animation: cakeFadeUp 1s ease both; }
+  .scrapbook-enter { animation: scrapFadeIn 1.2s ease both; }
+
+  .confetti-piece {
+    position: absolute; width: 6px; height: 6px; border-radius: 1px; pointer-events: none;
+    animation: confettiFall var(--cf-dur,2s) ease-out forwards var(--cf-delay,0s);
+  }
+
+  .memory-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px; padding: 10px 6px; text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s; cursor: default;
+  }
+  .memory-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,212,255,0.15);
+  }
+`
+
+/* ─── StarField ────────────────────────────────────── */
+function StarField() {
+  const stars = useRef(
+    [...Array(130)].map((_, i) => ({
+      id: i,
+      left: rand(0, 100),
+      top: rand(0, 100),
+      size: rand(1, 3.5),
+      dur: rand(2, 5),
+      delay: -rand(0, 5),
+    }))
+  ).current
 
   return (
-    <div
-      className="absolute pointer-events-none"
-      style={{
-        [side]: 0,
-        top: "50%",
-        transform: "translateY(-50%)",
-        zIndex: 5,
-      }}
-    >
-      <div style={{ position: "relative", width: 100, height: 180 }}>
+    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+      {stars.map((s) => (
         <div
+          key={s.id}
+          className="star-static"
           style={{
-            position: "absolute",
-            bottom: 40,
-            [side === "left" ? "left" : "right"]: 10,
-            width: 28,
-            height: 56,
-            borderRadius:
-              side === "left" ? "50% 30% 10% 50%" : "30% 50% 50% 10%",
-            background: "linear-gradient(135deg,#ffb300,#ff6d00)",
-            transform: side === "left" ? "rotate(-30deg)" : "rotate(30deg)",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-          }}
-        />
-        {active &&
-          particles.map((p, i) => {
-            const rad = (p.angle * Math.PI) / 180;
-            return (
-              <div
-                key={i}
-                style={{
-                  position: "absolute",
-                  top: "40%",
-                  left: side === "left" ? "30%" : "70%",
-                  width: p.size,
-                  height: p.size,
-                  borderRadius: i % 2 === 0 ? "50%" : "2px",
-                  backgroundColor: p.color,
-                  animation: `popParticle${side === "left" ? "L" : "R"} 1.2s ${p.delay}s ease-out infinite`,
-                  "--tx": `${Math.cos(rad) * p.dist}px`,
-                  "--ty": `${-Math.sin(rad) * p.dist}px`,
-                  opacity: 0,
-                }}
-              />
-            );
-          })}
-      </div>
-    </div>
-  );
-}
-
-// ── Wind Overlay ───────────────────────────────────────────
-function WindOverlay({ active, onDone }) {
-  const lines = Array.from({ length: 8 }).map((_, i) => ({
-    top: 30 + i * 6,
-    width: 60 + i * 5,
-    delay: i * 0.08,
-    opacity: 0.4 + i * 0.05,
-  }));
-
-  useEffect(() => {
-    if (active) {
-      const t = setTimeout(onDone, 1800);
-      return () => clearTimeout(t);
-    }
-  }, [active, onDone]);
-
-  if (!active) return null;
-  return (
-    <div
-      className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden"
-      style={{ zIndex: 50 }}
-    >
-      {lines.map((l, i) => (
-        <div
-          key={i}
-          style={{
-            position: "absolute",
-            top: `${l.top}%`,
-            left: 0,
-            height: 4,
-            width: `${l.width}%`,
-            borderRadius: 4,
-            background:
-              "linear-gradient(90deg, transparent, #b3e5fc, #e1f5fe, transparent)",
-            opacity: l.opacity,
-            animation: `windLine 1.4s ${l.delay}s ease-in forwards`,
+            left: s.left + '%',
+            top: s.top + '%',
+            width: s.size + 'px',
+            height: s.size + 'px',
+            '--dur': s.dur + 's',
+            '--delay': s.delay + 's',
           }}
         />
       ))}
-      <div
-        style={{ fontSize: 48, animation: "windLine 1.4s ease-in forwards" }}
-      >
-        💨
-      </div>
     </div>
-  );
+  )
 }
 
-// ── Wish Modal ─────────────────────────────────────────────
-function WishModal({ onSelect }) {
+/* ─── Nebulas ──────────────────────────────────────── */
+function Nebulas() {
+  return (
+    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+      <div className="nebula" style={{ width: 400, height: 300, left: '-10%', top: '10%', background: 'rgba(80,0,180,0.12)' }} />
+      <div className="nebula" style={{ width: 300, height: 250, right: '-5%', top: '30%', background: 'rgba(0,100,200,0.1)' }} />
+      <div className="nebula" style={{ width: 250, height: 200, left: '20%', bottom: '5%', background: 'rgba(120,0,100,0.09)' }} />
+    </div>
+  )
+}
+
+/* ─── FallingStar ──────────────────────────────────── */
+function FallingStar({ onDone }) {
+  const left   = rand(5, 95)
+  const top    = rand(0, 40)
+  const length = rand(60, 140)
+  const angle  = rand(10, 30)
+  const dur    = rand(0.8, 1.4)
+  const dist   = rand(250, 450)
+
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center z-50 px-4"
-      style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(6px)" }}
-    >
-      <div
-        className="rounded-3xl p-6 flex flex-col items-center gap-4 shadow-2xl w-full"
-        style={{
-          background: "linear-gradient(135deg,#1a0533 0%,#2d1b69 100%)",
-          border: "2px solid rgba(255,255,255,0.15)",
-          maxWidth: 480,
-          animation: "popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both",
-        }}
-      >
-        <div style={{ fontSize: 44 }}>🎁</div>
-        <h2
-          className="text-white font-bold text-center"
+      className="fall-star"
+      style={{
+        left: left + '%',
+        top: top + '%',
+        height: length + 'px',
+        '--angle': angle + 'deg',
+        '--fall-dur': dur + 's',
+        '--fall-dist': dist + 'px',
+      }}
+      onAnimationEnd={onDone}
+    />
+  )
+}
+
+/* ─── Confetti ─────────────────────────────────────── */
+function Confetti({ active }) {
+  if (!active) return null
+  const pieces = [...Array(40)].map((_, i) => ({
+    id: i,
+    left: rand(20, 80),
+    top: rand(30, 60),
+    color: ['#00d4ff', '#ff6b9d', '#ffd700', '#a78bfa', '#4ade80', '#fb923c'][i % 6],
+    dist: rand(80, 200),
+    x: rand(-120, 120),
+    rot: rand(360, 720) * (Math.random() > 0.5 ? 1 : -1),
+    delay: rand(0, 0.3),
+    dur: rand(1.5, 2.5),
+  }))
+  return (
+    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 20 }}>
+      {pieces.map((p) => (
+        <div
+          key={p.id}
+          className="confetti-piece"
           style={{
-            fontFamily: "'Playfair Display', serif",
-            fontSize: "clamp(1.2rem, 5vw, 1.6rem)",
-            letterSpacing: 1,
+            left: p.left + '%',
+            top: p.top + '%',
+            background: p.color,
+            '--cf-dist': p.dist + 'px',
+            '--cf-x': p.x + 'px',
+            '--cf-rot': p.rot + 'deg',
+            '--cf-delay': p.delay + 's',
+            '--cf-dur': p.dur + 's',
           }}
+        />
+      ))}
+    </div>
+  )
+}
+
+/* ─── CakeSVG ──────────────────────────────────────── */
+function CakeSVG({ blownOut }) {
+  const [tick, setTick] = useState(0)
+
+  useEffect(() => {
+    if (blownOut) return
+    const t = setInterval(() => setTick((n) => n + 1), 80)
+    return () => clearInterval(t)
+  }, [blownOut])
+
+  const candles = [
+    { x: 80,  color: '#ff6b9d', flame: '#ff9dbb' },
+    { x: 120, color: '#a78bfa', flame: '#c4b5fd' },
+    { x: 160, color: '#00d4ff', flame: '#7dd3fc' },
+    { x: 200, color: '#ffd700', flame: '#fde68a' },
+    { x: 240, color: '#4ade80', flame: '#bbf7d0' },
+  ]
+  const flameH = blownOut ? 0 : 12
+
+  return (
+    <svg
+      viewBox="0 0 320 220"
+      width="260"
+      height="179"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ filter: 'drop-shadow(0 0 20px rgba(255,120,0,0.4))' }}
+    >
+      <defs>
+        <style>{`
+          @keyframes flicker {
+            0%,100% { transform: scaleY(1) scaleX(1); }
+            50%      { transform: scaleY(1.15) scaleX(0.85); }
+          }
+        `}</style>
+      </defs>
+
+      {/* Plate shadow */}
+      <ellipse cx="160" cy="205" rx="150" ry="12" fill="rgba(0,212,255,0.12)" />
+
+      {/* Bottom layer */}
+      <rect x="30"  y="150" width="260" height="55" rx="8" fill="#1a0050" />
+      <rect x="30"  y="150" width="260" height="55" rx="8" fill="none" stroke="#7c3aed" strokeWidth="1.5" />
+      {[0,1,2,3,4,5].map((i) => (
+        <path key={'fw'+i} d={`M${30+i*44} 150 Q${52+i*44} 143 ${74+i*44} 150`} fill="none" stroke="rgba(167,139,250,0.5)" strokeWidth="2" />
+      ))}
+
+      {/* Middle layer */}
+      <rect x="50"  y="105" width="220" height="48" rx="6" fill="#12003a" />
+      <rect x="50"  y="105" width="220" height="48" rx="6" fill="none" stroke="#00d4ff" strokeWidth="1.5" />
+      {[0,1,2,3,4].map((i) => (
+        <path key={'mw'+i} d={`M${50+i*46} 105 Q${73+i*46} 98 ${96+i*46} 105`} fill="none" stroke="rgba(0,212,255,0.5)" strokeWidth="2" />
+      ))}
+
+      {/* Top layer */}
+      <rect x="75"  y="65"  width="170" height="42" rx="6" fill="#0a0028" />
+      <rect x="75"  y="65"  width="170" height="42" rx="6" fill="none" stroke="#a78bfa" strokeWidth="1.5" />
+      {[0,1,2,3].map((i) => (
+        <path key={'tw'+i} d={`M${75+i*46} 65 Q${98+i*46} 58 ${121+i*46} 65`} fill="none" stroke="rgba(167,139,250,0.5)" strokeWidth="2" />
+      ))}
+
+      {/* Decorations */}
+      {[70,110,150,190,250].map((x, i) => (
+        <text key={'ds'+i} x={x} y="175" fontSize="12" textAnchor="middle"
+          fill={['#ffd700','#ff6b9d','#00d4ff','#a78bfa','#ffd700'][i]}>★</text>
+      ))}
+      {[90,130,170,210].map((x, i) => (
+        <text key={'ds2'+i} x={x} y="130" fontSize="10" textAnchor="middle"
+          fill={['#00d4ff','#ffd700','#ff6b9d','#a78bfa'][i]}>✦</text>
+      ))}
+
+      {/* Candles */}
+      {candles.map((c, i) => (
+        <g key={'c'+i}>
+          <rect x={c.x-5} y="42" width="10" height="24" rx="3" fill={c.color} />
+          <line x1={c.x} y1="42" x2={c.x} y2="36" stroke="#888" strokeWidth="1.5" />
+
+          {!blownOut && (
+            <g style={{ transformOrigin: `${c.x}px 36px`, animation: `flicker ${0.3+i*0.07}s ease-in-out infinite alternate` }}>
+              <ellipse cx={c.x} cy={36-flameH/2}   rx="4" ry={flameH/2+1} fill={c.flame}  opacity="0.9" />
+              <ellipse cx={c.x} cy={36-flameH/2-2} rx="2" ry={flameH/3}   fill="#fff"     opacity="0.7" />
+            </g>
+          )}
+
+          {!blownOut && [...Array(4)].map((_, j) => {
+            const angle = (tick * 15 + j * 90 + i * 30) * Math.PI / 180
+            const r  = 10 + j * 4
+            const px = c.x + Math.cos(angle) * r
+            const py = (36 - flameH) + Math.sin(angle) * r * 0.4
+            return (
+              <circle key={j} cx={px} cy={py} r={1.5 + (j % 2)}
+                fill={['#ffd700','#fff','#ffb347',c.flame][j]}
+                opacity={0.7 + 0.3 * Math.sin((tick + j * 20) * 0.3)} />
+            )
+          })}
+
+          {blownOut && (
+            <g>
+              <circle cx={c.x}   cy="36" r="3" fill="rgba(200,200,200,0.3)" />
+              <circle cx={c.x+2} cy="30" r="2" fill="rgba(200,200,200,0.2)" />
+            </g>
+          )}
+        </g>
+      ))}
+    </svg>
+  )
+}
+
+/* ─── ProfileFrame ─────────────────────────────────── */
+function ProfileFrame() {
+  const size = 'clamp(90px, 14vw, 140px)'
+  return (
+    <div className="anim-fade-right" style={{ flexShrink: 0 }}>
+      <div
+        className="neon-frame"
+        style={{ width: size, height: size }}
+      >
+        <div
+          className="neon-frame-inner"
+          style={{ fontSize: 'clamp(36px,6vw,64px)' }}
         >
-          Choose Your Birthday Wish
-        </h2>
-        <p className="text-purple-200 text-sm text-center opacity-80">
-          Pick one wish that resonates with your heart ✨
-        </p>
-        <div className="flex flex-col gap-3 w-full mt-1">
-          {WISHES.map((w) => (
-            <button
-              key={w.id}
-              onClick={() => onSelect(w)}
-              className="w-full py-3 px-4 rounded-2xl text-left font-semibold cursor-pointer"
-              style={{
-                background: "rgba(255,255,255,0.08)",
-                border: "1.5px solid rgba(255,255,255,0.18)",
-                color: "white",
-                fontFamily: "'Nunito', sans-serif",
-                fontSize: "clamp(13px, 3.5vw, 15px)",
-                transition: "all 0.2s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.2)";
-                e.currentTarget.style.transform = "scale(1.02)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.08)";
-                e.currentTarget.style.transform = "scale(1)";
-              }}
-            >
-              <span style={{ marginRight: 10 }}>{w.emoji}</span>
-              {w.title}
-            </button>
-          ))}
+          {/*
+            ── REPLACE BELOW WITH YOUR IMAGE ──────────────────────────
+            Change '🌙' to an <img> tag:
+            <img src="YOUR_IMAGE_URL" alt="Adyasha" />
+            The CSS class neon-frame-inner img handles size & fit.
+            ────────────────────────────────────────────────────────────
+          */}
+          🌙
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-// ── Main App ───────────────────────────────────────────────
+/* ─── Scrapbook ────────────────────────────────────── */
+function Scrapbook() {
+  const memories = [
+    { emoji: '🌙', text: 'Midnight chats & laughter' },
+    { emoji: '✨', text: 'Every sparkle is you'      },
+    { emoji: '🎂', text: 'Sweeter every year'        },
+    { emoji: '💫', text: 'Dreams turning to stars'   },
+    { emoji: '🌸', text: 'Bloom in your own time'    },
+    { emoji: '🎁', text: 'You are the gift'          },
+  ]
+
+  return (
+    <div
+      className="scrapbook-enter"
+      style={{
+        width: '100%', maxWidth: 560,
+        background: 'rgba(10,0,30,0.85)',
+        border: '1.5px solid rgba(0,212,255,0.3)',
+        borderRadius: 18, padding: 20,
+        boxShadow: '0 0 40px rgba(0,212,255,0.15), 0 0 80px rgba(124,58,237,0.1)',
+        marginTop: 16,
+      }}
+    >
+      <div style={{
+        fontFamily: "'Cinzel Decorative', serif",
+        fontSize: 'clamp(13px,2.5vw,18px)', fontWeight: 700,
+        color: 'var(--neon-blue)',
+        textShadow: '0 0 15px var(--neon-blue-glow)',
+        marginBottom: 14, textAlign: 'center',
+      }}>
+        ✦ Digital Memory Scrapbook ✦
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 14 }}>
+        {memories.map((m, i) => (
+          <div key={i} className="memory-card">
+            <span style={{ fontSize: 'clamp(20px,3vw,28px)', display: 'block', marginBottom: 4 }}>{m.emoji}</span>
+            <div style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 'clamp(9px,1.5vw,11px)',
+              color: 'rgba(200,200,255,0.7)', fontStyle: 'italic', lineHeight: 1.3,
+            }}>{m.text}</div>
+          </div>
+        ))}
+      </div>
+
+      <p style={{
+        fontFamily: "'Cormorant Garamond', serif",
+        fontSize: 'clamp(12px,2vw,15px)', fontStyle: 'italic',
+        color: 'rgba(220,200,255,0.85)', textAlign: 'center', lineHeight: 1.6,
+        borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 12,
+      }}>
+        Happy Birthday, Adyasha Satapathy 🌙<br />
+        May every star in this midnight sky be a wish that comes true for you.<br />
+        <span style={{ color: 'rgba(0,212,255,0.8)', fontSize: '0.9em' }}>— With love, always ✦</span>
+      </p>
+    </div>
+  )
+}
+
+/* ─── Main Layout ──────────────────────────────────────────── */
 function BirthdayWish() {
-  const [stage, setStage] = useState("landing");
-  const [windActive, setWindActive] = useState(false);
-  const [blown, setBlown] = useState(false);
-  const [selectedWish, setSelectedWish] = useState(null);
-  const audioRef = useRef(null);
+  const [fallingStars, setFallingStars] = useState([])
+  const [phase,        setPhase]        = useState('intro') // intro | cake | blowing | gift
+  const [blownOut,     setBlownOut]     = useState(false)
+  const [showConfetti, setShowConfetti] = useState(false)
+  const nextStarId = useRef(0)
 
-  const balloons = useRef(
-    Array.from({ length: 18 }).map((_, i) => ({
-      color: [
-        "#f06292",
-        "#ba68c8",
-        "#4fc3f7",
-        "#ffb300",
-        "#66bb6a",
-        "#ff7043",
-        "#e91e63",
-        "#7c4dff",
-      ][i % 8],
-      left: 2 + (i / 18) * 96,
-      delay: (i * 0.4) % 3,
-      size: 48 + (i % 3) * 16,
-    })),
-  ).current;
-
-  const confettis = useRef(
-    Array.from({ length: 35 }).map((_, i) => ({
-      color: [
-        "#f06292",
-        "#ba68c8",
-        "#4fc3f7",
-        "#ffb300",
-        "#66bb6a",
-        "#ff7043",
-        "#e040fb",
-        "#00bcd4",
-      ][i % 8],
-      left: (i / 35) * 100,
-      delay: (i * 0.18) % 5,
-      rotate: ((i * 13) % 90) - 45,
-    })),
-  ).current;
-
-  const ribbons = useRef(
-    Array.from({ length: 20 }).map((_, i) => ({
-      color: ["#f06292", "#ba68c8", "#4fc3f7", "#ffb300", "#66bb6a"][i % 5],
-      left: (i / 20) * 100,
-      delay: (i * 0.25) % 4,
-    })),
-  ).current;
-
-  // ── Play music as soon as the gift button is clicked ──
-  const handleGiftClick = () => {
-    if (audioRef.current) {
-      audioRef.current.play().catch(() => {});
+  /* Launch a falling star every 3–5 s */
+  useEffect(() => {
+    let timerId
+    const schedule = () => {
+      timerId = setTimeout(() => {
+        const id = nextStarId.current++
+        setFallingStars((fs) => [...fs, id])
+        setTimeout(() => setFallingStars((fs) => fs.filter((x) => x !== id)), 2000)
+        schedule()
+      }, rand(3000, 5000))
     }
-    setStage("revealed");
-    setTimeout(() => setStage("cake"), 3000);
-  };
+    schedule()
+    return () => clearTimeout(timerId)
+  }, [])
 
-  const handleWindDone = () => {
-    setWindActive(false);
-    setBlown(true);
-    setTimeout(() => setStage("wishModal"), 600);
-  };
+  const handleGiftClick = () => { if (phase === 'intro') setPhase('cake') }
 
-  const handleWishSelect = (wish) => {
-    setSelectedWish(wish);
-    setStage("done");
-    if (audioRef.current) audioRef.current.pause();
-  };
+  const handleBlowClick = () => {
+    if (phase !== 'cake') return
+    setPhase('blowing')
+    setBlownOut(true)
+    setShowConfetti(true)
+    setTimeout(() => {
+      setShowConfetti(false)
+      setPhase('gift')
+    }, 1800)
+  }
 
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;600;700;800&display=swap');
+      {/* Inject global keyframes & utility classes */}
+      <style>{globalStyles}</style>
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      <div style={{
+        width: '100%', height: '100%', minHeight: 500,
+        background: 'radial-gradient(ellipse at 60% 40%, #0d0042 0%, #05001a 40%, #000008 100%)',
+        position: 'relative', overflow: 'hidden',
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        fontFamily: "'Cormorant Garamond', serif",
+      }}>
+        <Nebulas />
+        <StarField />
 
-        html { height: 100%; }
-
-        body {
-          font-family: 'Nunito', sans-serif;
-          overflow-x: hidden;
-          min-height: 100%;
-          width: 100%;
-        }
-
-        #root {
-          min-height: 100vh;
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-        }
-
-        @keyframes floatBalloon {
-          0%   { transform: translateY(0) rotate(-4deg); }
-          100% { transform: translateY(-60px) rotate(4deg); }
-        }
-        @keyframes fallConfetti {
-          0%   { transform: translateY(-30px) rotate(0deg); opacity: 0.9; }
-          100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-        }
-        @keyframes fallRibbon {
-          0%   { transform: translateY(-80px) scaleX(1); opacity: 0.8; }
-          50%  { transform: translateY(50vh) scaleX(-1); opacity: 0.9; }
-          100% { transform: translateY(110vh) scaleX(1); opacity: 0; }
-        }
-        @keyframes flicker {
-          0%   { transform: scaleY(1) scaleX(1) rotate(-2deg); opacity: 1; }
-          100% { transform: scaleY(1.18) scaleX(0.85) rotate(3deg); opacity: 0.85; }
-        }
-        @keyframes fadeSlideDown {
-          0%   { opacity: 0; transform: translateY(-60px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeSlideUp {
-          0%   { opacity: 0; transform: translateY(80px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes popIn {
-          0%   { opacity: 0; transform: scale(0.7); }
-          100% { opacity: 1; transform: scale(1); }
-        }
-        @keyframes windLine {
-          0%   { transform: translateX(-120%); opacity: 0.8; }
-          100% { transform: translateX(120vw); opacity: 0; }
-        }
-        @keyframes popParticleL {
-          0%   { transform: translate(0,0) scale(1); opacity: 1; }
-          100% { transform: translate(var(--tx), var(--ty)) scale(0.3); opacity: 0; }
-        }
-        @keyframes popParticleR {
-          0%   { transform: translate(0,0) scale(1); opacity: 1; }
-          100% { transform: translate(calc(-1 * var(--tx)), var(--ty)) scale(0.3); opacity: 0; }
-        }
-        @keyframes pulseGlow {
-          0%, 100% { box-shadow: 0 0 24px 6px #f06292aa, 0 4px 32px rgba(0,0,0,0.3); }
-          50%       { box-shadow: 0 0 40px 12px #ba68c8aa, 0 4px 32px rgba(0,0,0,0.3); }
-        }
-        @keyframes quoteReveal {
-          0%   { opacity: 0; transform: translateY(30px) scale(0.95); }
-          100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes bounceIn {
-          0%   { transform: scale(0.3); opacity: 0; }
-          60%  { transform: scale(1.1); opacity: 1; }
-          100% { transform: scale(1); }
-        }
-      `}</style>
-
-      {/* 🎵 Place happy-birthday.mp3 inside public/ folder */}
-      <audio ref={audioRef} loop>
-        <source src={birthdaySong} type="audio/mpeg" />
-      </audio>
-
-      {/* ── FULL SCREEN WRAPPER ── */}
-      <div
-        style={{
-          position: "relative",
-          width: "100vw",
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          overflow: "hidden",
-          background:
-            "linear-gradient(135deg,#1a0533 0%,#2d1b69 50%,#0d1b4b 100%)",
-        }}
-      >
-        {/* Decorations */}
-        {balloons.map((b, i) => (
-          <Balloon key={`b${i}`} {...b} />
-        ))}
-        {confettis.map((c, i) => (
-          <ConfettiStrip key={`c${i}`} {...c} />
-        ))}
-        {ribbons.map((r, i) => (
-          <Ribbon key={`r${i}`} {...r} />
+        {fallingStars.map((id) => (
+          <FallingStar key={id} onDone={() => setFallingStars((fs) => fs.filter((x) => x !== id))} />
         ))}
 
-        {/* ── LANDING ── */}
-        {stage === "landing" && (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 24,
-              zIndex: 10,
-              padding: "0 20px",
-              textAlign: "center",
-            }}
-          >
-            <div
-              style={{
-                fontSize: "clamp(48px,12vw,72px)",
-                animation: "bounceIn 1s cubic-bezier(0.34,1.56,0.64,1) both",
-              }}
-            >
-              🎉
+        <Confetti active={showConfetti} />
+
+        {/* Main card */}
+        <div style={{
+          position: 'relative', zIndex: 10,
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', textAlign: 'center',
+          padding: '24px 20px 20px',
+          maxWidth: 860, width: '95%',
+        }}>
+
+          {/* Birthday row */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 32, flexWrap: 'wrap', width: '100%' }}>
+
+            {/* Text side */}
+            <div style={{ flex: 1, minWidth: 200, textAlign: 'center' }}>
+              <div className="anim-fade-down" style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 'clamp(13px,2.5vw,18px)', letterSpacing: '0.35em',
+                fontWeight: 300, fontStyle: 'italic',
+                color: 'rgba(180,200,255,0.7)', textTransform: 'uppercase', marginBottom: 4,
+              }}>Happy Birthday</div>
+
+              <h1 className="anim-fade-up-1" style={{
+                fontFamily: "'Cinzel Decorative', serif",
+                fontSize: 'clamp(20px,4vw,40px)', fontWeight: 700,
+                background: 'linear-gradient(135deg, #fff 0%, var(--neon-blue) 40%, #a78bfa 70%, #fff 100%)',
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+                filter: 'drop-shadow(0 0 20px rgba(0,212,255,0.5))',
+                lineHeight: 1.2, marginBottom: 8,
+              }}>Adyasha Satapathy</h1>
+
+              <div className="anim-fade-up-2" style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 'clamp(11px,2vw,15px)', letterSpacing: '0.5em',
+                fontStyle: 'italic', color: 'rgba(200,180,255,0.6)', textTransform: 'uppercase',
+              }}>A night written in the stars</div>
+
+              {phase === 'intro' && (
+                <button
+                  className="gift-btn anim-fade-up-3"
+                  onClick={handleGiftClick}
+                  style={{ marginTop: 20, fontSize: 'clamp(11px,2vw,14px)', fontWeight: 700, letterSpacing: '0.08em', padding: '10px 24px' }}
+                >
+                  ⭐ Click for your gift
+                </button>
+              )}
             </div>
-            <h1
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: "clamp(1.5rem, 6vw, 4rem)",
-                color: "white",
-                textShadow: "0 0 30px rgba(240,98,146,0.7)",
-                letterSpacing: 2,
-              }}
-            >
-              Someone Special's Day! 🎂
-            </h1>
-            <button
-              onClick={handleGiftClick}
-              style={{
-                padding: "16px 40px",
-                borderRadius: 999,
-                fontSize: "clamp(15px, 4vw, 20px)",
-                fontWeight: 800,
-                fontFamily: "'Nunito', sans-serif",
-                background: "linear-gradient(135deg,#f06292,#ba68c8,#4fc3f7)",
-                color: "white",
-                border: "none",
-                cursor: "pointer",
-                animation: "pulseGlow 2s ease-in-out infinite",
-                letterSpacing: 1,
-                transition: "transform 0.2s",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.transform = "scale(1.07)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.transform = "scale(1)")
-              }
-            >
-              🎁 Click for your gift
-            </button>
+
+            {/* Profile image */}
+            <ProfileFrame />
           </div>
-        )}
 
-        {/* ── REVEALED + CAKE ── */}
-        {(stage === "revealed" || stage === "cake") && (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              zIndex: 10,
-              width: "100%",
-              padding: "20px 16px",
-            }}
-          >
-            {/* Image + Name row */}
+          {/* Cake */}
+          {(phase === 'cake' || phase === 'blowing' || phase === 'gift') && (
             <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "clamp(16px, 5vw, 40px)",
-                width: "100%",
-                animation: "fadeSlideDown 1s ease both",
-                flexWrap: "wrap",
-                padding: "0 16px",
-              }}
+              className={phase === 'cake' ? 'cake-enter' : ''}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 16, width: '100%' }}
             >
-              <img
-                src={BIRTHDAY_PERSON_IMAGE}
-                alt={BIRTHDAY_PERSON_NAME}
-                style={{
-                  width: "clamp(80px, 20vw, 140px)",
-                  height: "clamp(80px, 20vw, 140px)",
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                  border: "5px solid #f06292",
-                  boxShadow: "0 0 30px rgba(240,98,146,0.6)",
-                  flexShrink: 0,
-                }}
-              />
-              <h2
-                style={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontSize: "clamp(1.5rem, 6vw, 3.5rem)",
-                  color: "white",
-                  textShadow: "0 0 20px rgba(186,104,200,0.8)",
-                  letterSpacing: 2,
-                  textAlign: "center",
-                }}
-              >
-                {BIRTHDAY_PERSON_NAME} 🥳🌟
-              </h2>
-            </div>
+              <CakeSVG blownOut={blownOut} />
 
-            {/* Cake */}
-            {stage === "cake" && (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 20,
-                  position: "relative",
-                  marginTop: "clamp(28px, 7vw, 56px)",
-                  animation: "fadeSlideUp 1s ease both",
-                  width: "100%",
-                }}
-              >
-                <PartyPopper side="left" active={true} />
-                <PartyPopper side="right" active={true} />
-                <WindOverlay active={windActive} onDone={handleWindDone} />
-                <Cake blown={blown} />
-                {!blown && (
-                  <button
-                    onClick={() => setWindActive(true)}
-                    style={{
-                      marginTop: 16,
-                      padding: "13px 36px",
-                      borderRadius: 999,
-                      fontSize: "clamp(14px, 4vw, 18px)",
-                      fontWeight: 800,
-                      fontFamily: "'Nunito', sans-serif",
-                      background: "linear-gradient(135deg,#4fc3f7,#0288d1)",
-                      color: "white",
-                      border: "none",
-                      cursor: "pointer",
-                      boxShadow: "0 0 20px rgba(79,195,247,0.5)",
-                      transition: "transform 0.2s",
-                    }}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.transform = "scale(1.07)")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.transform = "scale(1)")
-                    }
-                  >
-                    💨 Blow the Candles
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── WISH MODAL ── */}
-        {stage === "wishModal" && <WishModal onSelect={handleWishSelect} />}
-
-        {/* ── DONE ── */}
-        {stage === "done" && selectedWish && (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 24,
-              zIndex: 10,
-              padding: "24px 20px",
-              maxWidth: 640,
-              width: "100%",
-              animation: "quoteReveal 1s ease both",
-              textAlign: "center",
-            }}
-          >
-            <img
-              src={BIRTHDAY_PERSON_IMAGE}
-              alt={BIRTHDAY_PERSON_NAME}
-              style={{
-                width: "clamp(80px, 20vw, 110px)",
-                height: "clamp(80px, 20vw, 110px)",
-                borderRadius: "50%",
-                objectFit: "cover",
-                border: "4px solid #f06292",
-                boxShadow: "0 0 24px rgba(240,98,146,0.5)",
-              }}
-            />
-            <h2
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: "clamp(1.4rem, 5vw, 3rem)",
-                color: "white",
-                textShadow: "0 0 20px rgba(186,104,200,0.8)",
-                letterSpacing: 2,
-              }}
-            >
-              {BIRTHDAY_PERSON_NAME} {selectedWish.emoji}
-            </h2>
-            <div
-              style={{
-                background: "rgba(255,255,255,0.08)",
-                borderRadius: 24,
-                padding: "24px clamp(16px, 5vw, 36px)",
-                border: "1.5px solid rgba(255,255,255,0.18)",
-                backdropFilter: "blur(8px)",
-                width: "100%",
-              }}
-            >
-              <p
-                style={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontSize: "clamp(0.9rem, 2.5vw, 1.3rem)",
-                  color: "#f8f8ff",
-                  lineHeight: 1.8,
-                  fontStyle: "italic",
-                  letterSpacing: 0.5,
-                  textShadow: "0 0 10px rgba(186,104,200,0.4)",
-                }}
-              >
-                "{selectedWish.quote}"
-              </p>
+              {phase === 'cake' && (
+                <button
+                  className="blow-btn"
+                  onClick={handleBlowClick}
+                  style={{ marginTop: 14, fontSize: 'clamp(10px,1.8vw,12px)', fontWeight: 700, letterSpacing: '0.06em', padding: '10px 22px' }}
+                >
+                  ⭐ Blow the candle, take your gift
+                </button>
+              )}
             </div>
-            <div style={{ fontSize: 36, animation: "bounceIn 0.8s ease both" }}>
-              🎊🎂🎊
-            </div>
-            <p
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontStyle: "italic",
-                color: "rgba(255,255,255,0.45)",
-                fontSize: "clamp(0.75rem, 2vw, 1rem)",
-                letterSpacing: 1,
-                marginTop: 8,
-              }}
-            >
-              Made by Sriansh
-            </p>
-          </div>
-        )}
+          )}
+
+          {/* Scrapbook */}
+          {phase === 'gift' && <Scrapbook />}
+        </div>
       </div>
     </>
-  );
+  )
 }
-
 export default BirthdayWish;
