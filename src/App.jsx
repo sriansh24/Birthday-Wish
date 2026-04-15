@@ -39,10 +39,10 @@ function App() {
           {/* <Route path="/birtday-wish/birtday-wish" element={<MidnightBirthdaySurprise />} /> */}
           <Route
             path="/"
-            element={<Navigate to="/birtday-wish/marvel-theme-birthday" />}
+            element={<Navigate to="/birthday-wish/marvel-theme-birthday" />}
           />
           <Route
-            path="/birtday-wish/marvel-theme-birthday"
+            path="/birthday-wish/marvel-theme-birthday"
             element={
               <AvengersBase
                 stopOpening={stopOpening}
