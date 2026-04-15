@@ -46,7 +46,7 @@ function HeroCard({ hero, onClick }) {
         {trait}
       </p>
     </article>
-  );
+  )
 }
 
 export default HeroCard;
