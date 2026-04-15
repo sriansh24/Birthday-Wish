@@ -7,9 +7,7 @@ import jarvisIntro from "./assets/birthday-song/MarvelThemeSong/Jarvis-intro.mp3
 import avengersAssemble from "./assets/birthday-song/MarvelThemeSong/Voicy_Avengers Assemble.mp3";
 // import BirthdayWish from "./page/BirthdayWish/BirthdayWish";
 // import MidnightBirthdaySurprise from "./page/MidnightBirtdaySurprise/MidnightBirtdaySurprise";
-// import AvengersBase from "./page/MarvelThemeBirthdayPage/AvengersBase";
-import AvengersBase2 from "./page/MarvelThemeBirthdayPage/AvengersBase2";
-// import MarvelThemeBirthday from "./page/MarvelThemeBirthdayPage/MarvelThemeBirthday";
+import AvengersBase from "./page/MarvelThemeBirthdayPage/AvengersBase";
 
 function App() {
   const {
@@ -39,9 +37,6 @@ function App() {
           {/* <Route path="/" element={<Navigate to="/birtday-wish/birtday-wish" />} /> */}
           {/* <Route path="/birtday-wish/birtday-wish" element={<BirthdayWish />} /> */}
           {/* <Route path="/birtday-wish/birtday-wish" element={<MidnightBirthdaySurprise />} /> */}
-          {/* <Route path="/birtday-wish/birtday-wish-avengers-base" element={<AvengersBase />} /> */}
-          {/* <Route path="/birtday-wish/birtday-wish-marvel-theme" element={<MarvelThemeBirthday />} /> */}
-          {/* <Route path="/birtday-wish/birtday-wish-marvel-theme" element={<MarvelThemeBirthday />} /> */}
           <Route
             path="/"
             element={<Navigate to="/birtday-wish/marvel-theme-birthday" />}
@@ -49,7 +44,7 @@ function App() {
           <Route
             path="/birtday-wish/marvel-theme-birthday"
             element={
-              <AvengersBase2
+              <AvengersBase
                 stopOpening={stopOpening}
                 playScrollSound={playScrollSound}
                 playCelebrateSound={playCelebrateSound}

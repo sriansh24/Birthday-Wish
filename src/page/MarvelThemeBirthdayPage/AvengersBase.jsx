@@ -1,23 +1,41 @@
-import { useNavigate } from "react-router-dom";
+import Navbar from "../../components/MarvelThemedBirthday/Navbar";
+import StarField from "../../components/MarvelThemedBirthday/StarField";
+import SectionDivider from "../../components/MarvelThemedBirthday/SectionDivider";
+import Footer from "../../components/MarvelThemedBirthday/Footer";
+import HeroSection from "../../components/MarvelThemedBirthday/HeroSection";
+import PowersSection from "../../components/MarvelThemedBirthday/PowersSection";
+import QuoteSection from "../../components/MarvelThemedBirthday/QuoteSection";
+import CelebrateSection from "../../components/MarvelThemedBirthday/CelebrateSection";
 
-function AvengersBase() {
-  const navigate = useNavigate();
-
+function AvengersBase({
+  stopOpening,
+  playScrollSound,
+  playCelebrateSound,
+  stopAllAudio,
+}) {
   return (
-    <div className="flex flex-col items-center justify-center h-screen text-center">
-      <h1 className="text-4xl md:text-6xl font-bold mb-4">
-        🎉 Happy Birthday
-      </h1>
-      <h2 className="text-2xl md:text-4xl text-red-500 mb-8">
-        Sandeep Saurav Das
-      </h2>
+    <div className="relative bg-[#0a0a0f] min-h-screen">
+      {/* Fixed background elements */}
+      <StarField />
+      <Navbar />
 
-      <button
-        onClick={() => navigate("/birtday-wish/birtday-wish-avengers-base")}
-        className="bg-red-600 px-6 py-3 rounded-xl hover:bg-red-700 transition"
-      >
-        Assemble the Avengers
-      </button>
+      {/* Page content — sits above starfield */}
+      <main className="relative z-10 pt-16">
+        <HeroSection
+          stopOpening={stopOpening}
+          playScrollSound={playScrollSound}
+        />
+        <SectionDivider />
+        <PowersSection />
+        <SectionDivider />
+        <QuoteSection />
+        <CelebrateSection
+          playCelebrateSound={playCelebrateSound}
+          stopAllAudio={stopAllAudio}
+        />
+      </main>
+
+      <Footer />
     </div>
   );
 }
