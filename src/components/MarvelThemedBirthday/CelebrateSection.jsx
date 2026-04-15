@@ -5,7 +5,7 @@ import { useScrollReveal } from "../../hooks/MarvelThemedBirthday/useScrollRevea
 import { useConfetti } from "../../hooks/MarvelThemedBirthday/useConfetti";
 import { BIRTHDAY_PERSON } from "../../constants/MarvelThemedBirthday/heroesData";
 
-function CelebrateSection({ playCelebrateSound, stopAllAudio  }) {
+function CelebrateSection({ playCelebrateSound, stopAllAudio }) {
   const sectionRef = useScrollReveal();
   const confettiRef = useRef(null);
   const { launchConfetti } = useConfetti(confettiRef);
@@ -58,9 +58,25 @@ function CelebrateSection({ playCelebrateSound, stopAllAudio  }) {
             integrity, and the{" "}
             <span className="text-marvel-blue font-bold">Thor</span> of
             confidence. You've powered us through every challenge like an Arc
-            Reactor that never dims.
+            Reactor that never dims.{" "}
           </p>
 
+          <p className="text-white/75 leading-[1.8] text-lg mt-4">
+            You are also the{" "}
+            <span className="text-marvel-dark-green font-bold">Hulk</span> of
+            strength, standing resilient when thinhgs get tough; the{" "}
+            <span className="text-marvel-purple font-bold">Hawkeye</span> of
+            precision, always hitting your mark; and the{" "}
+            <span className="text-marvel-purple font-bold">Doctor Strange</span>{" "}
+            of wisdom, seeing possibilities and solutions that others might
+            miss.
+          </p>
+
+          <p className="text-white/75 leading-[1.8] text-lg mt-4">
+            With every role you embody, you inspire us to grow, lead, and
+            believe — and we’re truly grateful to be part of your journey.
+          </p>
+          
           <p className="text-white/75 leading-[1.8] text-lg mt-5">
             May this year be your{" "}
             <span className="text-marvel-gold font-bold">Endgame victory</span>{" "}
