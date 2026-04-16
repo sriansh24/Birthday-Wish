@@ -1,8 +1,16 @@
-@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&display=swap");
+@font-face {
+  font-family: "Bebas Neue Fallback";
+  src: local("Arial");
+  ascent-override: 100%;
+  descent-override: 0%;
+  line-gap-override: 0%;
+  size-adjust: 58%;  /* Bebas Neue is very condensed vs Arial */
+}
+
 @import "tailwindcss";
 @theme {
-  --font-bebas: "Bebas Neue", cursive;
-  --font-rajdhani: "Rajdhani", sans-serif;
+  --font-bebas: "Bebas Neue", "Bebas Neue Fallback", Arial, sans-serif;
+  --font-rajdhani: "Rajdhani", Arial, sans-serif;
 
   --color-marvel-red: #c60000;
   --color-marvel-red-dark: #9a0000;
@@ -335,7 +343,7 @@
 
   /* Section headings */
   .section-title {
-    /* font-family: var(--font-bebas); */
+    font-family: var(--font-bebas);
     font-size: 3rem;
     letter-spacing: 0.15em;
     color: #ffffff;
@@ -529,12 +537,57 @@
 
   /* Wish Box */
   .wish-box {
+    position: relative;
     max-width: 640px;
     margin: 0 auto;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 215, 0, 0.2);
-    border-radius: 1rem;
     padding: 2.5rem;
+    border-radius: 1rem;
+    background: rgba(10, 10, 20, 0.9); /* darker clean background */
+    z-index: 1;
+  }
+
+  /* Glow border */
+  .wish-box::before {
+    content: "";
+    position: absolute;
+    inset: -1px; /* very thin border */
+    border-radius: inherit;
+    background: linear-gradient(
+      120deg,
+      transparent 20%,
+      rgba(255, 215, 0, 0.8),
+      rgba(255, 140, 0, 0.8),
+      rgba(255, 215, 0, 0.8),
+      transparent 80%
+    );
+
+    background-size: 200% 200%;
+    animation: borderGlow 10s linear infinite;
+    filter: blur(2px); /* THIS creates soft glow */
+    opacity: 0.7; /* controls intensity */
+    z-index: -1;
+    opacity: 0.4;
+    filter: blur(1.5px);
+  }
+
+  /* Inner layer (keeps content clean) */
+  .wish-box::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    background: rgba(10, 10, 20, 0.95);
+    z-index: -1;
+  }
+
+  /* Smooth slow animation */
+  @keyframes borderGlow {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 200% 50%;
+    }
   }
   .wish-title {
     font-family: var(--font-bebas);
@@ -741,19 +794,25 @@
   }
 }
 
-/* a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-a:hover {
-  color: #535bf2;
-} */
 
 body {
   margin: 0;
   display: block;
-  place-items: normal; 
+  place-items: normal;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -761,10 +820,6 @@ body {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
-}
-
-h2 {
-  font-synthesis: none;
 }
 
 button {
