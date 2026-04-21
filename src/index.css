@@ -1,13 +1,20 @@
+body {
+  @apply bg-black text-white overflow-hidden;
+  font-family: "Cormorant Garamond", serif;
+}
+
 @font-face {
   font-family: "Bebas Neue Fallback";
   src: local("Arial");
   ascent-override: 100%;
   descent-override: 0%;
   line-gap-override: 0%;
-  size-adjust: 58%;  /* Bebas Neue is very condensed vs Arial */
+  size-adjust: 58%; /* Bebas Neue is very condensed vs Arial */
 }
 
 @import "tailwindcss";
+@import "tailwindcss/preflight";
+@tailwind utilities;
 @theme {
   --font-bebas: "Bebas Neue", "Bebas Neue Fallback", Arial, sans-serif;
   --font-rajdhani: "Rajdhani", Arial, sans-serif;
@@ -28,6 +35,7 @@
   --animate-bounce-slow: bounceSlow 2s ease-in-out infinite;
   --animate-confetti-fall: confettiFall linear forwards;
 
+  /* ------------Marvel Theme Birthday------------ */
   @keyframes pulseSlow {
     0%,
     100% {
@@ -92,14 +100,13 @@
 /* ─────────────────────────────────────────────
    BASE
 ───────────────────────────────────────────── */
-@layer base {
+/* @layer base {
   html {
     scroll-behavior: smooth;
   }
   body {
     background-color: #0a0a0f;
     color: #ffffff;
-    /* font-family: var(--font-rajdhani); */
     overflow-x: hidden;
   }
   *,
@@ -107,7 +114,7 @@
   *::after {
     box-sizing: border-box;
   }
-}
+} */
 
 /* ─────────────────────────────────────────────
    COMPONENTS

@@ -1,0 +1,279 @@
+/* ── Landing Page ───────────────────────────────────────── */
+.landing-root {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 30% 20%,
+    #0d0d2b 0%,
+    #050510 60%,
+    #000008 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: "Cinzel Decorative", serif;
+}
+
+.starfield-canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Moon */
+.moon {
+  position: absolute;
+  top: 6%;
+  right: 10%;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fffde7, #ffe082 60%, #ffb300);
+  box-shadow:
+    0 0 30px 10px rgba(255, 224, 66, 0.35),
+    0 0 80px 30px rgba(255, 183, 0, 0.15),
+    0 0 160px 60px rgba(255, 183, 0, 0.06);
+  animation: moonFloat 6s ease-in-out infinite;
+  z-index: 1;
+}
+@keyframes moonFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Falling stars */
+.falling-star {
+  position: absolute;
+  top: -30px;
+  border-radius: 50% 50% 50% 50% / 0% 0% 100% 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 220, 100, 0.4),
+    transparent
+  );
+  animation: fallDown linear forwards;
+  z-index: 2;
+  pointer-events: none;
+}
+@keyframes fallDown {
+  0% {
+    top: -40px;
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.7;
+  }
+  100% {
+    top: 110vh;
+    opacity: 0;
+  }
+}
+
+/* Content */
+.landing-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.landing-sub {
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+  color: #ffe066;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  animation: fadeUp 1.2s ease both;
+}
+
+.landing-title {
+  font-family: "Cinzel Decorative", serif;
+  font-size: clamp(2.2rem, 7vw, 5rem);
+  font-weight: 900;
+  line-height: 1.1;
+  background: linear-gradient(
+    135deg,
+    #ffe066 0%,
+    #fffde7 40%,
+    #ffb347 70%,
+    #ffe066 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+  filter: drop-shadow(0 0 18px rgba(255, 224, 66, 0.45));
+  animation: fadeUp 1.4s ease both 0.2s;
+}
+
+.landing-tagline {
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  color: #b0b8e8;
+  letter-spacing: 0.15em;
+  margin-bottom: 1.4rem;
+  animation: fadeUp 1.4s ease both 0.4s;
+}
+
+/* ── Star Button ─────────────────────────────────────────── */
+.star-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  animation:
+    fadeUp 1.6s ease both 0.6s,
+    starPulse 3s ease-in-out 2.2s infinite;
+  gap: 0;
+}
+
+.star-svg {
+  width: clamp(120px, 25vw, 180px);
+  height: clamp(120px, 25vw, 180px);
+  position: relative;
+}
+
+.star-polygon {
+  fill: rgba(255, 224, 66, 0.12);
+  stroke: #ffe066;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 6px #ffe066aa);
+  transition: all 0.35s ease;
+}
+
+.star-btn-text {
+  position: absolute;
+  font-family: "Orbitron", sans-serif;
+  font-size: clamp(0.48rem, 1.4vw, 0.68rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #ffe066;
+  text-align: center;
+  pointer-events: none;
+  white-space: nowrap;
+  text-shadow: 0 0 8px #ffe066;
+  line-height: 1.3;
+  max-width: 80px;
+}
+
+/* Hover: rotate + glow */
+.star-btn:hover .star-svg {
+  animation: rotateCW 1.2s linear infinite;
+}
+.star-btn:hover .star-polygon {
+  fill: rgba(255, 224, 66, 0.28);
+  stroke: #fff8a0;
+  filter: drop-shadow(0 0 10px #ffe066) drop-shadow(0 0 22px #ffe066aa)
+    drop-shadow(0 0 40px rgba(255, 200, 0, 0.5));
+}
+.star-btn:hover .star-btn-text {
+  color: #fff;
+  text-shadow:
+    0 0 14px #ffe066,
+    0 0 28px #ffe066;
+}
+
+@keyframes rotateCW {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes starPulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 4px #ffe06644);
+  }
+  50% {
+    filter: drop-shadow(0 0 18px #ffe06699);
+  }
+}
+
+/* ── Orbs ───────────────────────────────────────────────── */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+}
+.orb1 {
+  width: 320px;
+  height: 320px;
+  top: -80px;
+  left: -100px;
+  background: radial-gradient(
+    circle,
+    rgba(100, 80, 200, 0.12),
+    transparent 70%
+  );
+  animation: orbDrift 12s ease-in-out infinite;
+}
+.orb2 {
+  width: 250px;
+  height: 250px;
+  bottom: -60px;
+  right: -60px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 100, 200, 0.1),
+    transparent 70%
+  );
+  animation: orbDrift 9s ease-in-out infinite reverse;
+}
+.orb3 {
+  width: 180px;
+  height: 180px;
+  top: 40%;
+  left: 5%;
+  background: radial-gradient(
+    circle,
+    rgba(66, 220, 255, 0.07),
+    transparent 70%
+  );
+  animation: orbDrift 15s ease-in-out infinite 3s;
+}
+@keyframes orbDrift {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(20px, -15px);
+  }
+  66% {
+    transform: translate(-15px, 20px);
+  }
+}
+
+/* Shared fadeUp */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,42 +1,41 @@
 import React, { useRef } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Navigate } from "react-router-dom";
-import useAudioController from "./hooks/MarvelThemedBirthday/useAudioController";
-import openingSong from "./assets/birthday-song/MarvelThemeSong/avengers-theme-by-vj.mp3";
-import jarvisIntro from "./assets/birthday-song/MarvelThemeSong/Jarvis-intro.mp3";
-import avengersAssemble from "./assets/birthday-song/MarvelThemeSong/Voicy_Avengers Assemble.mp3";
+// import useAudioController from "./hooks/MarvelThemedBirthday/useAudioController";
+// import openingSong from "./assets/birthday-song/MarvelThemeSong/avengers-theme-by-vj.mp3";
+// import jarvisIntro from "./assets/birthday-song/MarvelThemeSong/Jarvis-intro.mp3";
+// import avengersAssemble from "./assets/birthday-song/MarvelThemeSong/Voicy_Avengers Assemble.mp3";
 // import BirthdayWish from "./page/BirthdayWish/BirthdayWish";
+import MidnightBirthdaySurprise from "./page/MidnightBirthdaySurprise/MidnightBirthdaySurprise";
+import SurpriseFlow from "./components/MidnightBirtdaySurprise/SurpriseFlow";
 // import MidnightBirthdaySurprise from "./page/MidnightBirtdaySurprise/MidnightBirtdaySurprise";
-import AvengersBase from "./page/MarvelThemeBirthdayPage/AvengersBase";
+// import AvengersBase from "./page/MarvelThemeBirthdayPage/AvengersBase";
 
 function App() {
-  const {
-    openingRef,
-    scrollRef,
-    celebrateRef,
-    playOpening,
-    stopOpening,
-    playScrollSound,
-    playCelebrateSound,
-    stopAllAudio,
-  } = useAudioController();
+  // const {
+  //   openingRef,
+  //   scrollRef,
+  //   celebrateRef,
+  //   playOpening,
+  //   stopOpening,
+  //   playScrollSound,
+  //   playCelebrateSound,
+  //   stopAllAudio,
+  // } = useAudioController();
 
-  const hasPlayed = useRef(false);
+  // const hasPlayed = useRef(false);
 
-  const handleFirstClick = () => {
-    if (!hasPlayed.current) {
-      playOpening();
-      hasPlayed.current = true;
-    }
-  };
+  // const handleFirstClick = () => {
+  //   if (!hasPlayed.current) {
+  //     playOpening();
+  //     hasPlayed.current = true;
+  //   }
+  // };
 
   return (
     <>
-      <div onClick={handleFirstClick}>
+      {/* <div onClick={handleFirstClick}>
         <Routes>
-          {/* <Route path="/" element={<Navigate to="/birtday-wish/birtday-wish" />} /> */}
-          {/* <Route path="/birtday-wish/birtday-wish" element={<BirthdayWish />} /> */}
-          {/* <Route path="/birtday-wish/birtday-wish" element={<MidnightBirthdaySurprise />} /> */}
           <Route
             path="/"
             element={<Navigate to="/birthday-wish/marvel-theme-birthday" />}
@@ -60,7 +59,20 @@ function App() {
           src={avengersAssemble}
           data-default-volume="0.9"
         />
-      </div>
+      </div> */}
+      <Routes>
+        {/* <Route
+          path="/"
+          element={<Navigate to="/birtday-wish/birtday-wish" />}
+        />
+        <Route path="/birtday-wish/birtday-wish" element={<BirthdayWish />} /> */}
+        <Route
+          path="/"
+          element={<Navigate to="/birthday-wish" />}
+        />
+        <Route path="/birthday-wish" element={<MidnightBirthdaySurprise />} />
+        <Route path="/surprise-adyasha" element={<SurpriseFlow />} />
+      </Routes>
     </>
   );
 }
