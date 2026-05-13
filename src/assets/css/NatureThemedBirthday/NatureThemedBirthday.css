@@ -1,0 +1,1124 @@
+/* ---- Google Fonts ---- */
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap");
+
+/* ---- Root Variables ---- */
+:root {
+  --green-dark: #2d5a1b;
+  --green-mid: #4a7c2f;
+  --green-light: #82cc52;
+  --brown-dark: #5a3a18;
+  --brown-mid: #7a5230;
+  --brown-light: #b8864e;
+  --gold: #e8a83e;
+  --gold-light: #f5c96a;
+  --cream: #faf6ee;
+  --night-bg: #060d1a;
+  --bloom-pink: #f4a0c0;
+  --text-dark: #2a1f0e;
+  --text-mid: #4a3a22;
+  --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 0 40px rgba(232, 168, 62, 0.35);
+}
+
+/* ---- Global Reset ---- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: "Lato", sans-serif;
+}
+
+.app-root {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ========================================================
+   SHARED SECTION BASE
+   ======================================================== */
+.section {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 2rem 1.5rem;
+  gap: 1.5rem;
+}
+
+/* ========================================================
+   SECTION HEADERS
+   ======================================================== */
+.section-header {
+  text-align: center;
+  z-index: 2;
+}
+
+.section-title {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.4rem;
+}
+
+.green-title {
+  color: var(--green-dark);
+}
+.brown-title {
+  color: var(--brown-dark);
+}
+.bloom-title {
+  color: #c0406a;
+}
+
+.section-sub {
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  color: var(--text-mid);
+  font-weight: 300;
+  letter-spacing: 0.04em;
+}
+
+/* ========================================================
+   CTA BUTTONS
+   ======================================================== */
+.cta-btn {
+  z-index: 10;
+  border: none;
+  cursor: pointer;
+  font-family: "Lato", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.75rem 2rem;
+  border-radius: 50px;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: var(--brown-dark);
+  box-shadow: 0 4px 20px rgba(232, 168, 62, 0.4);
+}
+
+.cta-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 8px 30px rgba(232, 168, 62, 0.55);
+}
+
+.green-btn {
+  background: linear-gradient(135deg, var(--green-mid), var(--green-light));
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(74, 124, 47, 0.4);
+}
+.green-btn:hover {
+  box-shadow: 0 8px 30px rgba(74, 124, 47, 0.55);
+}
+.brown-btn {
+  background: linear-gradient(135deg, var(--brown-dark), var(--brown-light));
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(90, 58, 24, 0.4);
+}
+.brown-btn:hover {
+  box-shadow: 0 8px 30px rgba(90, 58, 24, 0.55);
+}
+.bloom-btn {
+  background: linear-gradient(135deg, #e0607a, #f4a0c0);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(224, 96, 122, 0.4);
+}
+.bloom-btn:hover {
+  box-shadow: 0 8px 30px rgba(224, 96, 122, 0.55);
+}
+.restart-btn {
+  background: linear-gradient(135deg, #1a3a60, #2a5aa0);
+  color: #e8f4ff;
+}
+
+/* ========================================================
+   NAV DOTS
+   ======================================================== */
+.nav-dots {
+  position: fixed;
+  right: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  z-index: 100;
+}
+
+.nav-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.3s;
+  padding: 0;
+}
+
+.active-dot {
+  background: var(--gold);
+  border-color: var(--gold);
+  transform: scale(1.4);
+}
+
+/* ========================================================
+   PARTICLE SYSTEMS
+   ======================================================== */
+.particles-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+/* Fireflies */
+.firefly {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #f5e87a 0%,
+    #d4be30 60%,
+    transparent 100%
+  );
+  box-shadow: 0 0 8px 3px rgba(245, 232, 122, 0.7);
+  animation: fireflyFloat linear infinite;
+}
+
+@keyframes fireflyFloat {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  50% {
+    transform: translate(40px, -60px) scale(1.3);
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-20px, -120px) scale(0.7);
+    opacity: 0;
+  }
+}
+
+/* Leaf particles */
+.leaf-particle {
+  position: absolute;
+  width: 12px;
+  height: 18px;
+  border-radius: 50% 0 50% 0;
+  background: linear-gradient(135deg, #6db344 0%, #4a7c2f 100%);
+  opacity: 0;
+  animation: leafFall linear infinite;
+}
+
+@keyframes leafFall {
+  0% {
+    transform: translate(0, -20px) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.7;
+  }
+  80% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(60px, 110vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* ========================================================
+   SECTION 1 — LANDING
+   ======================================================== */
+.landing-section {
+  background: linear-gradient(
+    180deg,
+    #0a1a05 0%,
+    #1a3a10 40%,
+    #2d5a1b 70%,
+    #3d4a20 100%
+  );
+  justify-content: space-evenly;
+}
+
+.soil-ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(180deg, #3d2a10 0%, #2a1a08 100%);
+  border-radius: 60% 60% 0 0 / 30px 30px 0 0;
+}
+
+/* Seed */
+.seed-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5;
+}
+
+.seed-glow-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 80px;
+  height: 80px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px solid rgba(232, 168, 62, 0.3);
+  animation: pulseRing 2.5s ease-out infinite;
+}
+
+.ring-2 {
+  width: 120px;
+  height: 120px;
+  animation-delay: 0.8s;
+  border-color: rgba(232, 168, 62, 0.15);
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.6);
+    opacity: 0;
+  }
+}
+
+.seed-body {
+  width: 44px;
+  height: 56px;
+  background: radial-gradient(
+    ellipse at 35% 30%,
+    #f5c96a 0%,
+    #c48020 60%,
+    #8a5810 100%
+  );
+  border-radius: 50% 50% 55% 45% / 60% 60% 40% 40%;
+  box-shadow:
+    0 0 30px rgba(232, 168, 62, 0.8),
+    0 0 60px rgba(232, 168, 62, 0.4);
+  position: relative;
+  animation: seedBreathe 3s ease-in-out infinite;
+}
+
+@keyframes seedBreathe {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 30px rgba(232, 168, 62, 0.8),
+      0 0 60px rgba(232, 168, 62, 0.4);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow:
+      0 0 50px rgba(232, 168, 62, 1),
+      0 0 90px rgba(232, 168, 62, 0.5);
+  }
+}
+
+.seed-inner-shine {
+  position: absolute;
+  top: 20%;
+  left: 25%;
+  width: 10px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  transform: rotate(-20deg);
+}
+
+.seed-label {
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(245, 201, 106, 0.7);
+  font-family: "Lato", sans-serif;
+}
+
+/* Landing title */
+.landing-title-block {
+  text-align: center;
+  z-index: 5;
+}
+
+.landing-title {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  color: var(--gold-light);
+  font-weight: 700;
+  text-shadow: 0 0 40px rgba(232, 168, 62, 0.6);
+  line-height: 1.15;
+}
+
+.landing-subtitle {
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  color: rgba(245, 201, 106, 0.75);
+  font-weight: 400;
+  margin-top: 0.25rem;
+}
+
+/* Countdown */
+.countdown-wrapper {
+  text-align: center;
+  z-index: 5;
+}
+
+.countdown-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(245, 201, 106, 0.55);
+  margin-bottom: 0.8rem;
+}
+
+.countdown-grid {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.countdown-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(232, 168, 62, 0.2);
+  border-radius: 12px;
+  padding: 0.65rem 1rem;
+  min-width: 64px;
+  backdrop-filter: blur(8px);
+}
+
+.countdown-value {
+  font-family: "Playfair Display", serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--gold-light);
+  line-height: 1;
+}
+
+.countdown-unit {
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(245, 201, 106, 0.5);
+  margin-top: 0.2rem;
+}
+
+/* ========================================================
+   SECTION 2 — GROWING PLANT
+   ======================================================== */
+.plant-section {
+  background: linear-gradient(
+    180deg,
+    #e8f5d4 0%,
+    #d0ecb0 40%,
+    #b8e090 80%,
+    #a0d070 100%
+  );
+}
+
+.plant-animation-wrapper {
+  z-index: 3;
+}
+
+.plant-svg {
+  width: 130px;
+  filter: drop-shadow(0 8px 24px rgba(74, 124, 47, 0.3));
+}
+
+/* Stem draw animation */
+.stem-line {
+  stroke-dasharray: 250;
+  stroke-dashoffset: 250;
+  animation: drawStem 1.5s ease forwards 0.3s;
+}
+
+@keyframes drawStem {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.leaf {
+  transform-origin: center;
+  opacity: 0;
+  animation: leafAppear 0.5s ease forwards;
+}
+.leaf-l1 {
+  animation-delay: 1s;
+}
+.leaf-r1 {
+  animation-delay: 1.3s;
+}
+.leaf-l2 {
+  animation-delay: 1.6s;
+}
+.leaf-r2 {
+  animation-delay: 1.9s;
+}
+.bud {
+  opacity: 0;
+  animation: leafAppear 0.6s ease forwards 2.2s;
+}
+
+@keyframes leafAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Memories grid */
+.memories-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
+  max-width: 540px;
+  width: 100%;
+  z-index: 3;
+}
+
+.memory-card {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(130, 204, 82, 0.3);
+  border-radius: 16px;
+  padding: 1rem;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(74, 124, 47, 0.15);
+  animation: fadeSlideUp 0.5s ease both;
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.memory-emoji {
+  font-size: 1.6rem;
+  margin-bottom: 0.3rem;
+}
+.memory-title {
+  font-family: "Playfair Display", serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--green-dark);
+  margin-bottom: 0.3rem;
+}
+.memory-text {
+  font-size: 0.72rem;
+  color: var(--text-mid);
+  line-height: 1.5;
+}
+
+/* ========================================================
+   SECTION 3 — TREE / FRIENDSHIP
+   ======================================================== */
+.tree-section {
+  background: linear-gradient(
+    180deg,
+    #f5ede0 0%,
+    #e8d5b5 40%,
+    #d4b882 70%,
+    #c4a060 100%
+  );
+}
+
+.tree-wrapper {
+  z-index: 3;
+}
+
+.tree-svg {
+  width: 170px;
+  filter: drop-shadow(0 12px 30px rgba(90, 58, 24, 0.25));
+}
+
+.canopy {
+  transform-origin: 150px 200px;
+  animation: canopySway 5s ease-in-out infinite alternate;
+}
+
+.c0 {
+  animation-delay: 0s;
+}
+.c1 {
+  animation-delay: 0.2s;
+}
+.c2 {
+  animation-delay: 0.4s;
+}
+.c3 {
+  animation-delay: 0.6s;
+}
+
+@keyframes canopySway {
+  from {
+    transform: rotate(-2deg);
+  }
+  to {
+    transform: rotate(2deg);
+  }
+}
+
+.friends-row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.85rem;
+  max-width: 620px;
+  width: 100%;
+  justify-content: center;
+  z-index: 3;
+  flex-wrap: wrap;
+}
+
+.friend-card {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(184, 134, 78, 0.3);
+  border-radius: 18px;
+  padding: 1rem 0.9rem;
+  text-align: center;
+  flex: 1 1 140px;
+  max-width: 180px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 18px rgba(90, 58, 24, 0.12);
+  animation: fadeSlideUp 0.5s ease both;
+}
+
+.friend-avatar {
+  font-size: 2rem;
+  margin-bottom: 0.4rem;
+}
+.friend-name {
+  font-family: "Playfair Display", serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--brown-dark);
+  margin-bottom: 0.4rem;
+}
+.friend-message {
+  font-size: 0.72rem;
+  color: var(--text-mid);
+  font-style: italic;
+  line-height: 1.6;
+}
+
+/* ========================================================
+   SECTION 4 — BLOOM
+   ======================================================== */
+.bloom-section {
+  background: linear-gradient(
+    180deg,
+    #fff0f6 0%,
+    #ffe0ed 40%,
+    #ffcfe5 70%,
+    #ffbad8 100%
+  );
+}
+
+/* Floating petals */
+.petals-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.petal {
+  position: absolute;
+  top: -30px;
+  opacity: 0;
+  animation: petalFall linear infinite;
+}
+
+.petal-shape-1 {
+  width: 14px;
+  height: 20px;
+  border-radius: 50% 0 50% 0;
+  background: linear-gradient(135deg, #f4a0c0, #f7c5d8);
+}
+.petal-shape-2 {
+  width: 10px;
+  height: 16px;
+  border-radius: 0 50% 0 50%;
+  background: linear-gradient(135deg, #f7c5d8, #e8709e);
+}
+.petal-shape-3 {
+  width: 18px;
+  height: 12px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fde0ec, #f4a0c0);
+}
+
+@keyframes petalFall {
+  0% {
+    transform: translateY(-30px) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.85;
+  }
+  80% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(110vh) rotate(540deg);
+    opacity: 0;
+  }
+}
+
+/* Flower SVG */
+.flower-wrapper {
+  z-index: 3;
+}
+
+.flower-svg {
+  width: 120px;
+  filter: drop-shadow(0 8px 20px rgba(224, 96, 122, 0.3));
+}
+
+.flower-petal-svg {
+  transform-origin: 100px 100px;
+  animation: petalPulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes petalPulse {
+  from {
+    opacity: 0.75;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Fun memories */
+.fun-memories-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+  max-width: 560px;
+  z-index: 3;
+}
+
+.fun-memory-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(244, 160, 192, 0.4);
+  border-radius: 50px;
+  padding: 0.45rem 1rem;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 3px 14px rgba(224, 96, 122, 0.12);
+  animation: fadeSlideUp 0.4s ease both;
+}
+
+.fun-icon {
+  font-size: 1rem;
+}
+.fun-label {
+  font-size: 0.75rem;
+  color: #8a3050;
+  font-weight: 600;
+}
+
+/* ========================================================
+   SECTION 5 — NIGHT SKY / BIRTHDAY
+   ======================================================== */
+.night-section {
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    #0d1f40 0%,
+    #06101e 50%,
+    #020810 100%
+  );
+  justify-content: space-evenly;
+}
+
+/* Stars */
+.stars-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: #ffffff;
+  animation: starTwinkle ease-in-out infinite alternate;
+}
+
+@keyframes starTwinkle {
+  from {
+    opacity: 0.2;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* Moon */
+.moon {
+  position: absolute;
+  top: 6%;
+  right: 10%;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 40% 40%,
+    #fffde0 0%,
+    #f0d070 60%,
+    #c8a830 100%
+  );
+  box-shadow:
+    0 0 40px rgba(240, 208, 112, 0.5),
+    0 0 80px rgba(240, 208, 112, 0.2);
+  animation: moonGlow 4s ease-in-out infinite alternate;
+}
+
+@keyframes moonGlow {
+  from {
+    box-shadow: 0 0 30px rgba(240, 208, 112, 0.4);
+  }
+  to {
+    box-shadow:
+      0 0 60px rgba(240, 208, 112, 0.7),
+      0 0 100px rgba(240, 208, 112, 0.25);
+  }
+}
+
+.moon-crater {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.08);
+}
+.moon-crater.c1 {
+  width: 14px;
+  height: 14px;
+  top: 22%;
+  left: 35%;
+}
+.moon-crater.c2 {
+  width: 9px;
+  height: 9px;
+  top: 52%;
+  left: 58%;
+}
+
+/* Shooting stars */
+.shooting-star {
+  position: absolute;
+  width: 80px;
+  height: 2px;
+  border-radius: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #ffffff 100%);
+  animation: shootingStar 5s linear infinite;
+  opacity: 0;
+}
+
+.s1 {
+  top: 12%;
+  left: 10%;
+  animation-delay: 1s;
+}
+.s2 {
+  top: 22%;
+  left: 55%;
+  animation-delay: 3.2s;
+}
+.s3 {
+  top: 8%;
+  left: 70%;
+  animation-delay: 6s;
+}
+
+@keyframes shootingStar {
+  0% {
+    transform: translate(0, 0) rotate(-30deg);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  30% {
+    transform: translate(120px, 60px) rotate(-30deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(120px, 60px) rotate(-30deg);
+    opacity: 0;
+  }
+}
+
+/* Silhouette tree */
+.silhouette-tree {
+  position: absolute;
+  bottom: 0;
+  left: -10px;
+  z-index: 2;
+  opacity: 0.5;
+}
+.silhouette-tree svg {
+  width: 120px;
+}
+
+/* Birthday message */
+.birthday-message {
+  z-index: 5;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  opacity: 0;
+  transform: translateY(30px);
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s ease;
+}
+
+.birthday-message.show-message {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.birthday-date-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(245, 201, 106, 0.55);
+}
+
+.happy-birthday-text {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(2rem, 7vw, 4.5rem);
+  font-weight: 700;
+  color: var(--gold-light);
+  text-shadow:
+    0 0 30px rgba(232, 168, 62, 0.6),
+    0 0 80px rgba(232, 168, 62, 0.3);
+  line-height: 1.1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.hb-char {
+  display: inline-block;
+  opacity: 0;
+  animation: charAppear 0.4s ease forwards;
+}
+
+@keyframes charAppear {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.birthday-divider {
+  color: var(--gold);
+  letter-spacing: 0.5em;
+  font-size: 0.9rem;
+  opacity: 0.6;
+}
+
+.wishes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.wish-item {
+  font-size: clamp(0.75rem, 1.8vw, 0.9rem);
+  color: rgba(200, 230, 180, 0.88);
+  font-style: italic;
+  font-family: "Playfair Display", serif;
+  opacity: 0;
+  animation: fadeSlideUp 0.5s ease forwards;
+}
+
+.birthday-signature {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: rgba(245, 201, 106, 0.65);
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+}
+
+/* ========================================================
+   Birthday Person Image
+   ======================================================== */
+.birthday-person-wrapper {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+  animation: fadeInUp 1.5s ease;
+}
+
+.birthday-person-image {
+  width: 220px;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 5px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 0 25px rgba(255, 255, 255, 0.4),
+    0 0 60px rgba(255, 192, 203, 0.4);
+  animation: floatImage 4s ease-in-out infinite;
+}
+
+/* ========================================================
+   Floating Effect
+   ======================================================== */
+@keyframes floatImage {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* ========================================================
+   Fade Animation
+   ======================================================== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================================
+   RESPONSIVE
+   ======================================================== */
+@media (max-width: 480px) {
+  .memories-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+  }
+  .memory-card {
+    padding: 0.75rem 0.6rem;
+  }
+  .friends-row {
+    gap: 0.6rem;
+  }
+  .friend-card {
+    flex: 1 1 130px;
+    padding: 0.75rem 0.65rem;
+  }
+  .countdown-grid {
+    gap: 0.6rem;
+  }
+  .countdown-cell {
+    min-width: 54px;
+    padding: 0.5rem 0.7rem;
+  }
+  .countdown-value {
+    font-size: 1.4rem;
+  }
+  .fun-memory-pill {
+    padding: 0.4rem 0.75rem;
+  }
+  .moon {
+    width: 50px;
+    height: 50px;
+    top: 5%;
+    right: 6%;
+  }
+  .nav-dots {
+    right: 0.6rem;
+  }
+  .section {
+    gap: 1rem;
+    padding: 1.5rem 1rem;
+  }
+  .plant-svg {
+    width: 100px;
+  }
+  .tree-svg {
+    width: 130px;
+  }
+  .flower-svg {
+    width: 90px;
+  }
+}
+
+@media (min-width: 768px) {
+  .memories-grid {
+    grid-template-columns: repeat(4, 1fr);
+    max-width: 720px;
+  }
+  .friends-row {
+    flex-wrap: nowrap;
+  }
+}
