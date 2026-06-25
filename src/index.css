@@ -14,7 +14,7 @@ body {
 
 @import "tailwindcss";
 @import "tailwindcss/preflight";
-@tailwind utilities;
+/* @tailwind utilities; */
 @theme {
   --font-bebas: "Bebas Neue", "Bebas Neue Fallback", Arial, sans-serif;
   --font-rajdhani: "Rajdhani", Arial, sans-serif;
